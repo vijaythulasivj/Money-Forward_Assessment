@@ -23,17 +23,21 @@ jobs:
 
     name: Validate Helm Chart
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
 
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup Helm
-        uses: azure/setup-helm@v4
+        uses: azure/setup-helm@v5
         with:
           version: v4.2.4
+
+      - name: Helm version
+        run: |
+          helm version
 
       - name: Helm lint
         run: |
@@ -67,10 +71,12 @@ jobs:
           mkdir -p dist
           helm package ./helm/ml-api --destination dist
 
+      - name: List packaged chart
+        run: |
+          ls -lh dist
+
       - name: Upload Helm package
         uses: actions/upload-artifact@v4
         with:
           name: ml-api-helm-chart
           path: dist/*.tgz
-
-
