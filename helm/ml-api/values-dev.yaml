@@ -1,0 +1,28 @@
+replicaCount: 1
+
+image:
+  repository: ml-api
+  tag: "1.0.0"
+  pullPolicy: IfNotPresent
+
+service:
+  type: NodePort
+  port: 80
+  targetPort: 8000
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+
+autoscaling:
+  enabled: false
+
+serviceAccount:
+  create: true
+
+secret:
+  enabled: false

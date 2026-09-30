@@ -1,0 +1,43 @@
+suite: Deployment tests
+
+templates:
+  - templates/deployment.yaml
+
+tests:
+
+  - it: should create a Deployment
+    asserts:
+      - isKind:
+          of: Deployment
+
+  - it: should use the correct image
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].image
+          value: ml-api:1.0.0
+
+  - it: should expose port 8000
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].ports[0].containerPort
+          value: 8000
+
+  - it: should configure readiness probe
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].readinessProbe.httpGet.path
+          value: /health
+
+  - it: should configure liveness probe
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].livenessProbe.httpGet.path
+          value: /health
+
+  - it: should use one replica by default
+    set:
+      replicaCount: 1
+    asserts:
+      - equal:
+          path: spec.replicas
+          value: 1

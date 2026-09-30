@@ -1,0 +1,31 @@
+suite: Service tests
+
+templates:
+  - templates/service.yaml
+
+tests:
+
+  - it: should create a Service
+    asserts:
+      - isKind:
+          of: Service
+
+  - it: should expose port 80
+    asserts:
+      - equal:
+          path: spec.ports[0].port
+          value: 80
+
+  - it: should target port 8000
+    asserts:
+      - equal:
+          path: spec.ports[0].targetPort
+          value: 8000
+
+  - it: should use NodePort for development
+    set:
+      service.type: NodePort
+    asserts:
+      - equal:
+          path: spec.type
+          value: NodePort
