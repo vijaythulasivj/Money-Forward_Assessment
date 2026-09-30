@@ -61,13 +61,12 @@ jobs:
       - name: Run Helm unit tests
         run: |
           docker run --rm \
+            --entrypoint /bin/sh \
             -v "${{ github.workspace }}:/source:ro" \
             -w /tmp \
             helmunittest/helm-unittest:latest \
-            sh -c '
-              cp -R /source/helm/ml-api /tmp/ml-api &&
-              helm unittest --strict /tmp/ml-api
-            '
+            -c "cp -R /source/helm/ml-api /tmp/ml-api && chmod -R u+rwX /tmp/ml-api && helm unittest --strict /tmp/ml-api"
+            
       - name: Package Helm chart
         run: |
           mkdir -p dist
