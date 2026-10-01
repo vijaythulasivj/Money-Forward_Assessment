@@ -60,8 +60,8 @@ jobs:
 
       - name: Run Helm unit tests
         run: |
+          set -ex
           docker pull helmunittest/helm-unittest:latest
-      
           docker run --rm \
             --entrypoint /bin/sh \
             -v "${{ github.workspace }}:/source:ro" \
@@ -71,6 +71,7 @@ jobs:
               set -ex
               cp -R /source/helm/ml-api /tmp/ml-api
               chmod -R u+rwX /tmp/ml-api
+              echo "=== Running Helm unit tests ==="
               helm unittest --strict /tmp/ml-api
             '
             
