@@ -82,7 +82,7 @@ jobs:
           ls -lh dist
 
       - name: Upload Helm package
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: ml-api-helm-chart
           path: dist/*.tgz
