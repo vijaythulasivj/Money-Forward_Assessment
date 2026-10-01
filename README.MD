@@ -1,6 +1,6 @@
-MLOps Platform Engineering - Generic Helm Deployment Platform
+# MLOps Platform Engineering - Generic Helm Deployment Platform
 
-1. Overview
+## 1. Overview
 
 This project implements a reusable and environment-agnostic Helm deployment platform for ML APIs running on Kubernetes.
 
@@ -29,17 +29,23 @@ This allows Machine Learning Engineers to deploy different ML APIs using the sam
 
 ---
 
-2. Problem & Solution
+## 2. Problem & Solution
 
-Problem
+### Problem
 
 Managing Kubernetes deployments separately for Dev, Staging, and Production can result in duplicated manifests and environment-specific configuration.
 
 For example:
 
+<div align="center">
+
+<pre>
 Dev Kubernetes Manifests
 Staging Kubernetes Manifests
 Production Kubernetes Manifests
+</pre>
+
+</div>
 
 This can lead to:
 
@@ -50,10 +56,13 @@ This can lead to:
 - Environment-specific inconsistencies
 - Slower deployment cycles
 
-Solution
+### Solution
 
 The proposed solution uses a single generic Helm chart with environment-specific values.
 
+<div align="center">
+
+<pre>
                  Generic Helm Chart
                         |
           +-------------+-------------+
@@ -63,6 +72,9 @@ The proposed solution uses a single generic Helm chart with environment-specific
           |             |             |
           v             v             v
          Dev         Staging       Production
+</pre>
+
+</div>
 
 The Kubernetes deployment logic remains unchanged while environment-specific properties such as replicas, resources, service type, image configuration, and autoscaling are controlled through values files.
 
@@ -70,10 +82,13 @@ This provides a reusable platform that can be consumed by multiple ML engineerin
 
 ---
 
-3. Architecture
+## 3. Architecture
 
-Overall Architecture
+### Overall Architecture
 
+<div align="center">
+
+<pre>
                          GitHub Repository
                                 |
                                 v
@@ -107,41 +122,51 @@ Overall Architecture
              Dev             Staging           Production
               |                 |                 |
        values-dev.yaml   values-staging.yaml  values-prod.yaml
+</pre>
 
-Local Deployment Architecture
+</div>
 
-                    Docker Image
-                        |
-                        v
-                      Minikube
-                        |
-                        v
-                    Generic Helm Chart
-                        |
-                        v
-                    values-dev.yaml
-                        |
-                        v
-                    Kubernetes Deployment
-                        |
-                        v
-                    Kubernetes Service
-                        |
-                        v
-                    Local PC
-                        |
-                        +---- GET /
-                        |
-                        +---- GET /health
-                        |
-                        +---- GET /predict
+### Local Deployment Architecture
+
+<div align="center">
+
+<pre>
+Docker Image
+     |
+     v
+  Minikube
+     |
+     v
+ Generic Helm Chart
+     |
+     v
+ values-dev.yaml
+     |
+     v
+ Kubernetes Deployment
+     |
+     v
+ Kubernetes Service
+     |
+     v
+ Local PC
+     |
+     +---- GET /
+     |
+     +---- GET /health
+     |
+     +---- GET /predict
+</pre>
+
+</div>
 
 The sample API is implemented using FastAPI and is intentionally simple because the primary focus of this assignment is the MLOps deployment platform rather than the ML model itself.
 
 ---
 
-4. Repository Structure
+## 4. Repository Structure
 
+```text
 Money-Forward_Assessment/
 │
 ├── .github/
@@ -180,29 +205,30 @@ Money-Forward_Assessment/
 │
 ├── .gitignore
 └── README.MD
+```
 
-Directory Responsibilities
+### Directory Responsibilities
 
-                  | Directory/File | Purpose |
-                  |---|---|
-                  | `app/` | Sample FastAPI ML API |
-                  | `helm/ml-api/` | Generic Helm chart |
-                  | `helm/ml-api/templates/` | Reusable Kubernetes templates |
-                  | `helm/ml-api/tests/` | Helm unit tests |
-                  | `values-dev.yaml` | Development configuration |
-                  | `values-staging.yaml` | Staging configuration |
-                  | `values-prod.yaml` | Production configuration |
-                  | `.github/workflows/` | CI/CD automation |
-                  | `terraform/` | Infrastructure as Code example |
-                  | `README.MD` | Project documentation |
+| Directory/File | Purpose |
+|---|---|
+| `app/` | Sample FastAPI ML API |
+| `helm/ml-api/` | Generic Helm chart |
+| `helm/ml-api/templates/` | Reusable Kubernetes templates |
+| `helm/ml-api/tests/` | Helm unit tests |
+| `values-dev.yaml` | Development configuration |
+| `values-staging.yaml` | Staging configuration |
+| `values-prod.yaml` | Production configuration |
+| `.github/workflows/` | CI/CD automation |
+| `terraform/` | Infrastructure as Code example |
+| `README.MD` | Project documentation |
 
+---
 
-
-5. Generic Helm Chart Design
+## 5. Generic Helm Chart Design
 
 The Helm chart is designed around separation of deployment logic and environment configuration.
 
-Reusable Templates
+### Reusable Templates
 
 The chart contains reusable Kubernetes templates for:
 
@@ -215,13 +241,15 @@ The chart contains reusable Kubernetes templates for:
 
 The templates do not contain environment-specific values.
 
-Environment Values
+### Environment Values
 
 Environment-specific configuration is provided through:
 
+```text
 values-dev.yaml
 values-staging.yaml
 values-prod.yaml
+```
 
 For example:
 
@@ -241,7 +269,7 @@ autoscaling:
 
 The same deployment template can therefore be reused across all environments.
 
-Benefits
+### Benefits
 
 - No duplicated Kubernetes manifests
 - Reduced configuration drift
@@ -252,24 +280,28 @@ Benefits
 
 ---
 
-6. Dev / Staging / Production Configuration
+## 6. Dev / Staging / Production Configuration
 
 The same Helm chart is used for all environments.
 
 Only the values change.
 
-Development
+### Development
 
 File:
 
+```text
 helm/ml-api/values-dev.yaml
+```
 
 Configuration:
 
+```text
 Replicas:             1
 Service:              NodePort
 Autoscaling:          Disabled
 Resource allocation:  Lower
+```
 
 NodePort is used because it makes the application easily accessible from a local Minikube environment.
 
@@ -285,20 +317,23 @@ autoscaling:
   enabled: false
 ```
 
-Staging
+### Staging
 
 File:
 
+```text
 helm/ml-api/values-staging.yaml
+```
 
 Configuration:
 
-
+```text
 Replicas:             2
 Service:              ClusterIP
 Autoscaling:          Enabled
 Minimum replicas:     2
 Maximum replicas:     4
+```
 
 Example:
 
@@ -312,19 +347,23 @@ autoscaling:
   targetCPUUtilizationPercentage: 70
 ```
 
-Production
+### Production
 
 File:
 
+```text
 helm/ml-api/values-prod.yaml
+```
 
 Configuration:
 
+```text
 Replicas:             3
 Service:              ClusterIP
 Autoscaling:          Enabled
 Minimum replicas:     3
 Maximum replicas:     10
+```
 
 Example:
 
@@ -342,11 +381,11 @@ The MLE therefore only needs to select the appropriate values file rather than m
 
 ---
 
-7. Local Minikube Deployment
+## 7. Local Minikube Deployment
 
 The Helm chart has been deployed and tested on a local Minikube Kubernetes cluster.
 
-Start Minikube
+### Start Minikube
 
 ```bash
 minikube start
@@ -360,24 +399,28 @@ minikube status
 
 Expected:
 
+```text
 minikube
 type: Control Plane
 host: Running
 kubelet: Running
 apiserver: Running
 kubeconfig: Configured
+```
 
-Build the Sample API Image
+### Build the Sample API Image
 
 ```bash
 docker build -t ml-api:1.0.0 ./app
 ```
-Load the Image into Minikube
+
+### Load the Image into Minikube
 
 ```bash
 minikube image load ml-api:1.0.0
 ```
-Deploy Using Helm
+
+### Deploy Using Helm
 
 ```bash
 helm upgrade --install ml-api ./helm/ml-api \
@@ -398,7 +441,7 @@ kubectl get svc
 
 The development environment uses a NodePort service.
 
-Access the API
+### Access the API
 
 Get the local service URL:
 
@@ -408,9 +451,11 @@ minikube service ml-api-ml-api --url
 
 Example:
 
+```text
 http://127.0.0.1:61318
+```
 
-Test Root Endpoint
+### Test Root Endpoint
 
 ```bash
 curl http://127.0.0.1:61318
@@ -424,7 +469,8 @@ Expected:
   "version": "1.0.0"
 }
 ```
-Test Health Endpoint
+
+### Test Health Endpoint
 
 ```bash
 curl http://127.0.0.1:61318/health
@@ -437,7 +483,8 @@ Expected:
   "status": "healthy"
 }
 ```
-Test Prediction Endpoint
+
+### Test Prediction Endpoint
 
 ```bash
 curl http://127.0.0.1:61318/predict
@@ -456,18 +503,20 @@ This demonstrates that the Helm-deployed ML API is callable directly from the lo
 
 ---
 
-8. Helm Test Cases
+## 8. Helm Test Cases
 
 The Helm chart contains unit tests for the major deployment components.
 
 Test suites:
 
+```text
 helm/ml-api/tests/
 ├── deployment_test.yaml
 ├── service_test.yaml
 └── hpa_test.yaml
+```
 
-Deployment Tests
+### Deployment Tests
 
 The deployment tests validate:
 
@@ -478,7 +527,7 @@ The deployment tests validate:
 - Liveness probe
 - Replica count
 
-Service Tests
+### Service Tests
 
 The service tests validate:
 
@@ -487,7 +536,7 @@ The service tests validate:
 - Target port
 - NodePort configuration
 
-HPA Tests
+### HPA Tests
 
 The HPA tests validate:
 
@@ -496,24 +545,29 @@ The HPA tests validate:
 - Minimum replicas
 - Maximum replicas
 
-Test Result
+### Test Result
 
 The complete test suite currently contains:
 
+```text
 Test Suites: 3 passed
 Tests:       14 passed
 Failures:    0
+```
 
 The tests are also executed automatically as part of GitHub Actions CI.
 
 ---
 
-9. CI/CD Pipeline
+## 9. CI/CD Pipeline
 
 GitHub Actions is used for Helm chart CI/CD.
 
-Pipeline Flow
+### Pipeline Flow
 
+<div align="center">
+
+<pre>
 Git Push / Pull Request
           |
           v
@@ -542,13 +596,17 @@ Git Push / Pull Request
           |
           v
     Upload Artifact
+</pre>
+
+</div>
 
 Workflow file:
 
+```text
 .github/workflows/helm-ci-cd.yml
+```
 
-
-Helm Validation
+### Helm Validation
 
 The pipeline runs:
 
@@ -573,13 +631,13 @@ helm template ml-api ./helm/ml-api \
   -f ./helm/ml-api/values-prod.yaml
 ```
 
-Unit Testing
+### Unit Testing
 
 Helm unit tests are executed during CI using the Helm unittest Docker image.
 
 The pipeline validates all three test suites before packaging the chart.
 
-Helm Packaging
+### Helm Packaging
 
 After successful validation:
 
@@ -589,37 +647,41 @@ helm package ./helm/ml-api --destination dist
 
 This produces:
 
+```text
 dist/ml-api-0.1.0.tgz
+```
 
 The packaged chart is then uploaded as a GitHub Actions artifact.
 
-CI/CD Result
+### CI/CD Result
 
 The current GitHub Actions pipeline successfully performs:
 
-            Checkout
-              ↓
-            Helm Setup
-              ↓
-            Helm Lint
-              ↓
-            Dev Template Validation
-              ↓
-            Staging Template Validation
-              ↓
-            Production Template Validation
-              ↓
-            Helm Unit Tests
-              ↓
-            Helm Package
-              ↓
-            Artifact Upload
+```text
+Checkout
+   ↓
+Helm Setup
+   ↓
+Helm Lint
+   ↓
+Dev Template Validation
+   ↓
+Staging Template Validation
+   ↓
+Production Template Validation
+   ↓
+Helm Unit Tests
+   ↓
+Helm Package
+   ↓
+Artifact Upload
+```
 
 This ensures that only a validated and tested Helm package is produced by CI.
 
 ---
 
-10. Private OCI Repository Publishing
+## 10. Private OCI Repository Publishing
 
 Helm supports OCI-based chart repositories.
 
@@ -627,21 +689,27 @@ For a production cloud environment, the packaged Helm chart can be published to 
 
 Amazon ECR is one example of such a private registry.
 
-Production Publishing Flow
+### Production Publishing Flow
 
-              GitHub Actions
-                    |
-                    v
-              OIDC Authentication
-                    |
-                    v
-              Cloud IAM Role
-                    |
-                    v
-              Private OCI Registry
-                    |
-                    v
-              Helm Chart
+<div align="center">
+
+<pre>
+GitHub Actions
+      |
+      v
+OIDC Authentication
+      |
+      v
+Cloud IAM Role
+      |
+      v
+Private OCI Registry
+      |
+      v
+Helm Chart
+</pre>
+
+</div>
 
 For example, with Amazon ECR:
 
@@ -660,7 +728,7 @@ helm push \
   oci://<account-id>.dkr.ecr.<region>.amazonaws.com/ml-api-helm
 ```
 
-Cloud Account Limitation
+### Cloud Account Limitation
 
 This assessment environment does not provide an AWS/cloud account.
 
@@ -678,16 +746,18 @@ This provides short-lived credentials and avoids storing permanent cloud credent
 
 ---
 
-11. Terraform / IaC
+## 11. Terraform / IaC
 
 Terraform is included to demonstrate how the Helm deployment could be integrated into Infrastructure as Code.
 
 Files:
 
+```text
 terraform/
 ├── main.tf
 ├── variables.tf
 └── outputs.tf
+```
 
 The Terraform example demonstrates:
 
@@ -699,6 +769,9 @@ The Terraform example demonstrates:
 
 Conceptually:
 
+<div align="center">
+
+<pre>
                 Terraform
                     |
           +---------+---------+
@@ -711,6 +784,9 @@ Conceptually:
                               |
                               v
                        Generic ML API
+</pre>
+
+</div>
 
 The Terraform configuration is intentionally illustrative.
 
@@ -720,9 +796,9 @@ Therefore, the Terraform configuration demonstrates the intended production impl
 
 ---
 
-12. Autoscaling & Secrets
+## 12. Autoscaling & Secrets
 
-Autoscaling
+### Autoscaling
 
 The Helm chart supports Kubernetes Horizontal Pod Autoscaling using `autoscaling/v2`.
 
@@ -740,11 +816,13 @@ The same HPA template can therefore be reused across environments.
 
 Current configuration:
 
+```text
 Dev          -> HPA disabled
 Staging      -> 2 to 4 replicas
 Production   -> 3 to 10 replicas
+```
 
-Secrets
+### Secrets
 
 The chart supports consuming an existing Kubernetes Secret.
 
@@ -768,6 +846,9 @@ Actual credentials should never be committed to Git.
 
 For a production implementation, secrets could be managed using:
 
+<div align="center">
+
+<pre>
 Cloud Secrets Manager
         |
         v
@@ -778,14 +859,17 @@ Kubernetes Secret
         |
         v
 ML API Pod
+</pre>
+
+</div>
 
 This keeps sensitive values outside the Git repository.
 
 ---
 
-13. Versioning & Security
+## 13. Versioning & Security
 
-Versioning
+### Versioning
 
 Helm chart version and application version are maintained separately.
 
@@ -796,39 +880,47 @@ version: 0.1.0
 appVersion: "1.0.0"
 ```
 
-Chart Version
+### Chart Version
 
 The Helm chart version represents changes to the deployment platform.
 
 Example:
 
+```text
 0.1.0 -> Initial chart
 0.2.0 -> New deployment functionality
 1.0.0 -> Stable production chart
+```
 
-Application Version
+### Application Version
 
 The application version represents the version of the ML API/application.
 
 This allows the deployment platform and application to evolve independently.
 
-Recommended Production Versioning
+### Recommended Production Versioning
 
-              Git Commit
-                  |
-                  v
-              CI Validation
-                  |
-                  v
-              Semantic Version
-                  |
-                  v
-              Helm Package
-                  |
-                  v
-              Immutable OCI Artifact
+<div align="center">
 
-Security
+<pre>
+Git Commit
+    |
+    v
+CI Validation
+    |
+    v
+Semantic Version
+    |
+    v
+Helm Package
+    |
+    v
+Immutable OCI Artifact
+</pre>
+
+</div>
+
+### Security
 
 The solution follows these security principles.
 
@@ -865,30 +957,36 @@ For a production implementation, the CI pipeline can additionally include:
 
 ---
 
-14. Future / Outside-the-Box Improvements
+## 14. Future / Outside-the-Box Improvements
 
 The current implementation provides the required deployment foundation.
 
 The following improvements could be added for a production-grade MLOps platform.
 
-GitOps
+### GitOps
 
 Argo CD or Flux could be used for declarative Kubernetes deployments.
 
-            GitHub
-              |
-              v
-            GitOps Repository
-              |
-              v
-            Argo CD / Flux
-              |
-              v
-            Kubernetes
+<div align="center">
+
+<pre>
+GitHub
+   |
+   v
+GitOps Repository
+   |
+   v
+Argo CD / Flux
+   |
+   v
+Kubernetes
+</pre>
+
+</div>
 
 This provides improved auditability, drift detection, and rollback capabilities.
 
-Progressive Delivery
+### Progressive Delivery
 
 Production deployments could support:
 
@@ -898,7 +996,7 @@ Production deployments could support:
 
 This allows ML APIs to be gradually exposed to production traffic.
 
-ML-Specific Monitoring
+### ML-Specific Monitoring
 
 Beyond infrastructure metrics, an MLOps platform should monitor:
 
@@ -910,10 +1008,13 @@ Beyond infrastructure metrics, an MLOps platform should monitor:
 - Model drift
 - Feature distribution changes
 
-Observability
+### Observability
 
 Prometheus and Grafana could be integrated for:
 
+<div align="center">
+
+<pre>
 Metrics
    +
 Dashboards
@@ -921,20 +1022,27 @@ Dashboards
 Alerts
    +
 Application Monitoring
+</pre>
 
-Immutable Images
+</div>
+
+### Immutable Images
 
 Instead of using mutable image tags such as:
 
+```text
 ml-api:latest
+```
 
 production deployments should use immutable identifiers such as:
 
+```text
 ml-api:<git-sha>
+```
 
 This makes deployments reproducible and improves rollback reliability.
 
-Additional CI Validation
+### Additional CI Validation
 
 The CI pipeline can be extended with:
 
@@ -945,30 +1053,35 @@ The CI pipeline can be extended with:
 - Security policy checks
 - Infrastructure security scanning
 
-Multi-Model Platform
+### Multi-Model Platform
 
 The same platform could support multiple ML APIs without creating separate Kubernetes deployment templates.
 
 For example:
 
-          Generic Helm Chart
-                |
-                +---- Recommendation API
-                |
-                +---- Fraud Detection API
-                |
-                +---- Classification API
-                |
-                +---- Forecasting API
+<div align="center">
 
+<pre>
+Generic Helm Chart
+       |
+       +---- Recommendation API
+       |
+       +---- Fraud Detection API
+       |
+       +---- Classification API
+       |
+       +---- Forecasting API
+</pre>
+
+</div>
 
 Each service would use the same deployment platform while supplying its own image and environment values.
 
 ---
 
-15. Limitations & Conclusion
+## 15. Limitations & Conclusion
 
-Limitations
+### Limitations
 
 The following components are intentionally not executed against cloud infrastructure:
 
@@ -1009,17 +1122,26 @@ This implementation addresses the core problem by replacing duplicated environme
 
 The deployment model is:
 
+<div align="center">
+
+<pre>
 One Generic Helm Chart
           +
 Minimal Environment Values
           |
           v
 Dev / Staging / Production
+</pre>
+
+</div>
 
 The platform allows ML Engineers to focus on their ML APIs while the platform standardizes the Kubernetes deployment process.
 
 The overall approach is:
 
+<div align="center">
+
+<pre>
 Build Once
     |
     v
@@ -1036,5 +1158,8 @@ Publish to Private OCI Registry
     |
     v
 Deploy Consistently
+</pre>
+
+</div>
 
 > **Build the deployment logic once, configure it per environment, validate automatically, and deploy consistently.**
