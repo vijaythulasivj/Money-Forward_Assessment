@@ -37,15 +37,9 @@ Managing Kubernetes deployments separately for Dev, Staging, and Production can 
 
 For example:
 
-<div align="center">
-
-<pre>
 Dev Kubernetes Manifests
 Staging Kubernetes Manifests
 Production Kubernetes Manifests
-</pre>
-
-</div>
 
 This can lead to:
 
@@ -60,9 +54,6 @@ This can lead to:
 
 The proposed solution uses a single generic Helm chart with environment-specific values.
 
-<div align="center">
-
-<pre>
                  Generic Helm Chart
                         |
           +-------------+-------------+
@@ -72,9 +63,6 @@ The proposed solution uses a single generic Helm chart with environment-specific
           |             |             |
           v             v             v
          Dev         Staging       Production
-</pre>
-
-</div>
 
 The Kubernetes deployment logic remains unchanged while environment-specific properties such as replicas, resources, service type, image configuration, and autoscaling are controlled through values files.
 
@@ -86,9 +74,6 @@ This provides a reusable platform that can be consumed by multiple ML engineerin
 
 ### Overall Architecture
 
-<div align="center">
-
-<pre>
                          GitHub Repository
                                 |
                                 v
@@ -122,15 +107,9 @@ This provides a reusable platform that can be consumed by multiple ML engineerin
              Dev             Staging           Production
               |                 |                 |
        values-dev.yaml   values-staging.yaml  values-prod.yaml
-</pre>
-
-</div>
 
 ### Local Deployment Architecture
 
-<div align="center">
-
-<pre>
 Docker Image
      |
      v
@@ -565,9 +544,6 @@ GitHub Actions is used for Helm chart CI/CD.
 
 ### Pipeline Flow
 
-<div align="center">
-
-<pre>
 Git Push / Pull Request
           |
           v
@@ -596,9 +572,6 @@ Git Push / Pull Request
           |
           v
     Upload Artifact
-</pre>
-
-</div>
 
 Workflow file:
 
@@ -691,9 +664,6 @@ Amazon ECR is one example of such a private registry.
 
 ### Production Publishing Flow
 
-<div align="center">
-
-<pre>
 GitHub Actions
       |
       v
@@ -707,9 +677,6 @@ Private OCI Registry
       |
       v
 Helm Chart
-</pre>
-
-</div>
 
 For example, with Amazon ECR:
 
@@ -769,9 +736,6 @@ The Terraform example demonstrates:
 
 Conceptually:
 
-<div align="center">
-
-<pre>
                 Terraform
                     |
           +---------+---------+
@@ -784,9 +748,6 @@ Conceptually:
                               |
                               v
                        Generic ML API
-</pre>
-
-</div>
 
 The Terraform configuration is intentionally illustrative.
 
@@ -846,9 +807,6 @@ Actual credentials should never be committed to Git.
 
 For a production implementation, secrets could be managed using:
 
-<div align="center">
-
-<pre>
 Cloud Secrets Manager
         |
         v
@@ -859,9 +817,6 @@ Kubernetes Secret
         |
         v
 ML API Pod
-</pre>
-
-</div>
 
 This keeps sensitive values outside the Git repository.
 
@@ -900,9 +855,6 @@ This allows the deployment platform and application to evolve independently.
 
 ### Recommended Production Versioning
 
-<div align="center">
-
-<pre>
 Git Commit
     |
     v
@@ -916,9 +868,6 @@ Helm Package
     |
     v
 Immutable OCI Artifact
-</pre>
-
-</div>
 
 ### Security
 
@@ -967,9 +916,6 @@ The following improvements could be added for a production-grade MLOps platform.
 
 Argo CD or Flux could be used for declarative Kubernetes deployments.
 
-<div align="center">
-
-<pre>
 GitHub
    |
    v
@@ -980,9 +926,6 @@ Argo CD / Flux
    |
    v
 Kubernetes
-</pre>
-
-</div>
 
 This provides improved auditability, drift detection, and rollback capabilities.
 
@@ -1012,9 +955,6 @@ Beyond infrastructure metrics, an MLOps platform should monitor:
 
 Prometheus and Grafana could be integrated for:
 
-<div align="center">
-
-<pre>
 Metrics
    +
 Dashboards
@@ -1022,9 +962,6 @@ Dashboards
 Alerts
    +
 Application Monitoring
-</pre>
-
-</div>
 
 ### Immutable Images
 
@@ -1059,9 +996,6 @@ The same platform could support multiple ML APIs without creating separate Kuber
 
 For example:
 
-<div align="center">
-
-<pre>
 Generic Helm Chart
        |
        +---- Recommendation API
@@ -1071,9 +1005,6 @@ Generic Helm Chart
        +---- Classification API
        |
        +---- Forecasting API
-</pre>
-
-</div>
 
 Each service would use the same deployment platform while supplying its own image and environment values.
 
@@ -1122,26 +1053,17 @@ This implementation addresses the core problem by replacing duplicated environme
 
 The deployment model is:
 
-<div align="center">
-
-<pre>
 One Generic Helm Chart
           +
 Minimal Environment Values
           |
           v
 Dev / Staging / Production
-</pre>
-
-</div>
 
 The platform allows ML Engineers to focus on their ML APIs while the platform standardizes the Kubernetes deployment process.
 
 The overall approach is:
 
-<div align="center">
-
-<pre>
 Build Once
     |
     v
@@ -1158,8 +1080,5 @@ Publish to Private OCI Registry
     |
     v
 Deploy Consistently
-</pre>
-
-</div>
 
 > **Build the deployment logic once, configure it per environment, validate automatically, and deploy consistently.**
