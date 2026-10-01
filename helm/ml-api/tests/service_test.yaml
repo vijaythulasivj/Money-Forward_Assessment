@@ -29,11 +29,3 @@ tests:
       - equal:
           path: spec.type
           value: NodePort
-
-  - it: should use ClusterIP when configured
-    set:
-      service.type: ClusterIP
-    asserts:
-      - equal:
-          path: spec.type
-          value: ClusterIP

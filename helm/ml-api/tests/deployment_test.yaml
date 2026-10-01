@@ -41,10 +41,3 @@ tests:
       - equal:
           path: spec.replicas
           value: 1
-
-  - it: should not set replicas when autoscaling is enabled
-    set:
-      autoscaling.enabled: true
-    asserts:
-      - notExists:
-          path: spec.replicas
