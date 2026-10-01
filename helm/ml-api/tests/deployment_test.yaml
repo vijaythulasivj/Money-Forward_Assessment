@@ -4,7 +4,6 @@ templates:
   - templates/deployment.yaml
 
 tests:
-
   - it: should create a Deployment
     asserts:
       - isKind:
@@ -34,11 +33,10 @@ tests:
           path: spec.template.spec.containers[0].livenessProbe.httpGet.path
           value: /health
 
-  - it: should configure the replica count
-  set:
-    replicaCount: 1
-  asserts:
-    - equal:
-        path: spec.replicas
-        value: 1
-
+  - it: should use one replica by default
+    set:
+      replicaCount: 1
+    asserts:
+      - equal:
+          path: spec.replicas
+          value: 1
