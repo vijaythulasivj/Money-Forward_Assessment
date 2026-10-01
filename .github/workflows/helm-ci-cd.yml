@@ -58,14 +58,28 @@ jobs:
           helm template ml-api ./helm/ml-api \
             -f ./helm/ml-api/values-prod.yaml
 
-      - name: Run Helm unit tests
-        run: |
-          docker run --rm \
-            --entrypoint /bin/sh \
-            -v "${{ github.workspace }}:/source:ro" \
-            -w /tmp \
-            helmunittest/helm-unittest:latest \
-            -c "cp -R /source/helm/ml-api /tmp/ml-api && chmod -R u+rwX /tmp/ml-api && helm unittest --strict /tmp/ml-api"
+        - name: Run Helm unit tests
+    run: |
+      set -x
+
+      docker pull helmunittest/helm-unittest:latest
+
+      docker run --rm \
+        --entrypoint /bin/sh \
+        -v "${{ github.workspace }}:/source:ro" \
+        -w /tmp \
+        helmunittest/helm-unittest:latest \
+        -c '
+          set -ex
+          cp -R /source/helm/ml-api /tmp/ml-api
+          chmod -R u+rwX /tmp/ml-api
+          echo "=== Helm unittest version ==="
+          helm unittest --version || true
+          echo "=== Chart files ==="
+          find /tmp/ml-api -maxdepth 3 -type f | sort
+          echo "=== Running tests ==="
+          helm unittest --strict /tmp/ml-api
+        '
             
       - name: Package Helm chart
         run: |
