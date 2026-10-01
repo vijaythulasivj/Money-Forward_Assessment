@@ -34,10 +34,11 @@ tests:
           path: spec.template.spec.containers[0].livenessProbe.httpGet.path
           value: /health
 
-  - it: should use one replica by default
-    set:
-      replicaCount: 1
-    asserts:
-      - equal:
-          path: spec.replicas
-          value: 1
+  - it: should configure the replica count
+  set:
+    replicaCount: 1
+  asserts:
+    - equal:
+        path: spec.replicas
+        value: 1
+
